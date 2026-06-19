@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sharpen — Tailor your resume to the job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/index.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #1C1D21;
+    --paper: #FAFAF8;
+    --paper-soft: #F1F0EA;
+    --card: #E8E6DE;
+    --blue: #3B5BFF;
+    --blue-dim: #EEF0FF;
+    --green: #16A34A;
+    --green-dim: #E9F7EF;
+    --red: #DC2626;
+    --red-dim: #FDECEC;
+    --line: #D8D5CA;
+    --shadow: 0 1px 2px rgba(28,29,33,0.04), 0 8px 24px rgba(28,29,33,0.06);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; letter-spacing: -0.01em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 21px; }
+  .brand-mark {
+    width: 26px; height: 26px; border-radius: 6px; background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--paper); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .nav-cta {
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500;
+    background: var(--ink); color: var(--paper); padding: 10px 18px;
+    border-radius: 7px; text-decoration: none; border: none; cursor: pointer;
+  }
+  .nav-cta:hover { background: var(--blue); }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 56px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+  @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--blue); font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); display: inline-block; }
+
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.04;
+  }
+  .hero h1 em { font-style: normal; color: var(--blue); }
+  .hero p.lede {
+    font-size: 18px; color: #4A4B52; max-width: 480px; margin: 20px 0 28px;
+  }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
+    background: var(--blue); color: white; padding: 14px 26px;
+    border-radius: 8px; border: none; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59,91,255,0.28); }
+  .btn-secondary {
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
+    background: transparent; color: var(--ink); padding: 14px 22px;
+    border-radius: 8px; border: 1.5px solid var(--line); cursor: pointer;
+  }
+  .btn-secondary:hover { border-color: var(--ink); }
+
+  /* ---------- DIFF DEMO (signature element) ---------- */
+  .diff-card {
+    background: white; border-radius: 14px; box-shadow: var(--shadow);
+    border: 1px solid var(--line); overflow: hidden;
+  }
+  .diff-card-head {
+    padding: 14px 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8A8B91;
+  }
+  .diff-dots { display: flex; gap: 6px; }
+  .diff-dots span { width: 9px; height: 9px; border-radius: 50%; background: var(--card); }
+  .diff-body { padding: 22px 22px 26px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; line-height: 1.85; min-height: 200px; }
+  .diff-line { display: block; }
+  .diff-del { color: #B0AEA4; text-decoration: line-through; }
+  .diff-add { background: var(--green-dim); color: #0F5C2A; padding: 1px 3px; border-radius: 3px; }
+  .diff-cursor { display: inline-block; width: 2px; height: 14px; background: var(--blue); vertical-align: middle; animation: blink 0.9s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .diff-tag {
+    display: inline-block; font-size: 10.5px; padding: 2px 7px; border-radius: 4px;
+    background: var(--blue-dim); color: var(--blue); margin-left: 6px; font-weight: 600;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .diff-tag.show { opacity: 1; }
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust { padding: 28px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .trust-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #6B6C72; }
+  .trust-row strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 72px 0; }
+  .section-head { max-width: 600px; margin-bottom: 44px; }
+  .section-head .eyebrow { margin-bottom: 14px; }
+  .section-head h2 { font-size: clamp(26px, 3.2vw, 36px); font-weight: 600; line-height: 1.15; }
+  .section-head p { color: #5A5B62; font-size: 16.5px; margin-top: 14px; }
+
+  /* how it works */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 880px) { .steps { grid-template-columns: 1fr; } }
+  .step-card {
+    background: white; border: 1px solid var(--line); border-radius: 12px; padding: 26px;
+  }
+  .step-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--blue); font-weight: 600; margin-bottom: 14px; }
+  .step-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 8px; }
+  .step-card p { font-size: 14.5px; color: #5A5B62; margin: 0; }
+
+  /* ---------- APP (the actual tool) ---------- */
+  .app-section { background: var(--paper-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .app-grid { grid-template-columns: 1fr; } }
+
+  .panel { background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+  .panel h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .panel .panel-sub { font-size: 13px; color: #8A8B91; margin-bottom: 16px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; background: var(--paper-soft); padding: 4px; border-radius: 8px; width: fit-content; }
+  .tab {
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 7px 14px;
+    border-radius: 6px; cursor: pointer; color: #8A8B91; border: none; background: transparent;
+  }
+  .tab.active { background: white; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+  textarea {
+    width: 100%; min-height: 220px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6;
+    resize: vertical; color: var(--ink); background: var(--paper);
+  }
+  textarea:focus { outline: 2px solid var(--blue); outline-offset: -1px; border-color: transparent; }
+  input[type="text"], input[type="url"] {
+    width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); background: var(--paper);
+  }
+  input:focus { outline: 2px solid var(--blue); outline-offset: -1px; border-color: transparent; }
+
+  .field-label { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: #8A8B91; font-weight: 600; margin: 16px 0 6px; display: block; }
+  .field-label:first-of-type { margin-top: 0; }
+
+  .file-drop {
+    border: 1.5px dashed var(--line); border-radius: 8px; padding: 18px; text-align: center;
+    font-size: 13px; color: #8A8B91; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  }
+  .file-drop:hover, .file-drop.dragover { border-color: var(--blue); background: var(--blue-dim); }
+  .file-drop input { display: none; }
+  .file-name { font-family: 'IBM Plex Mono', monospace; color: var(--ink); font-weight: 600; }
+
+  .generate-bar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 4px; }
+  .generate-note { font-size: 13px; color: #8A8B91; max-width: 420px; }
+
+  .btn-generate {
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px;
+    background: var(--blue); color: white; padding: 16px 32px;
+    border-radius: 9px; border: none; cursor: pointer; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-generate:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(59,91,255,0.3); }
+  .btn-generate:disabled { background: #B7BFE0; cursor: not-allowed; }
+
+  .spinner {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- RESULTS ---------- */
+  .results { margin-top: 36px; }
+  .results-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .results-head h3 { font-size: 22px; font-weight: 600; }
+
+  .score-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .score-pill {
+    background: white; border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 18px; min-width: 140px;
+  }
+  .score-pill .num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; line-height: 1; }
+  .score-pill .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8A8B91; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 4px; }
+  .score-pill.good .num { color: var(--green); }
+
+  .kw-section { background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+  .kw-section h4 { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .kw-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kw-chip { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 5px 11px; border-radius: 6px; font-weight: 600; }
+  .kw-chip.matched { background: var(--green-dim); color: #0F5C2A; }
+  .kw-chip.missing { background: var(--red-dim); color: var(--red); }
+
+  .resume-output {
+    background: white; border: 1px solid var(--line); border-radius: 12px; padding: 32px;
+    font-family: 'Inter', sans-serif; font-size: 14.5px; line-height: 1.7; white-space: pre-wrap;
+  }
+  .resume-output h1, .resume-output h2 { display: none; }
+
+  .output-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .btn-small {
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px;
+    background: white; color: var(--ink); padding: 9px 16px; border: 1px solid var(--line);
+    border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-small:hover { border-color: var(--ink); }
+
+  .change-log { margin-top: 24px; }
+  .change-log h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .change-item {
+    display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--paper-soft);
+    font-size: 13.5px;
+  }
+  .change-item:first-child { border-top: none; }
+  .change-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px; background: var(--blue-dim); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
+  .change-item p { margin: 0; color: #4A4B52; }
+  .change-item strong { color: var(--ink); }
+
+  .error-box {
+    background: var(--red-dim); border: 1px solid #F3C6C6; color: #8A1F1F;
+    border-radius: 10px; padding: 16px 18px; font-size: 13.5px; margin-top: 16px;
+  }
+
+  /* ---------- FAQ / privacy ---------- */
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 40px; }
+  @media (max-width: 880px) { .faq-grid { grid-template-columns: 1fr; } }
+  .faq-item h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .faq-item p { font-size: 14.5px; color: #5A5B62; margin: 0; }
+
+  footer { padding: 36px 0 48px; border-top: 1px solid var(--line); }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; color: #8A8B91; }
+
+  .visually-hidden { position: absolute; left: -9999px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .diff-cursor { animation: none; }
+    .spinner { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="brand"><span class="brand-mark">S</span>Sharpen</div>
+    <button class="nav-cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Tailor my resume</button>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="wrap hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Resume tailoring, done right</div>
+      <h1>Your resume,<br><em>rewritten</em> for the job<br>you actually want.</h1>
+      <p class="lede">Paste your resume or LinkedIn profile, drop in the job posting, and get a rewritten resume that highlights your real experience in the language that job is asking for — no fabricated skills, no fluff.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">
+          Tailor my resume →
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-card-head">
+        <span>before_and_after.diff</span>
+        <div class="diff-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="diff-body" id="diffDemo"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST STRIP -->
+<div class="wrap trust">
+  <div class="trust-row">
+    <span><strong>Your words, sharpened</strong> — nothing invented</span>
+    <span><strong>Built for ATS</strong> — keyword-aware by design</span>
+    <span><strong>Nothing stored</strong> — processed for this session only</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The process</div>
+      <h2>Three inputs in. One sharper resume out.</h2>
+      <p>Sharpen reads the job posting the way a hiring manager and an ATS both would, then re-frames your real experience to match — reordering, re-wording, and re-prioritizing what you've already done.</p>
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-label">INPUT_01</div>
+        <h3>Your resume or LinkedIn</h3>
+        <p>Paste your resume text, upload a file, or paste your LinkedIn "About" and experience sections directly.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-label">INPUT_02</div>
+        <h3>The job posting</h3>
+        <p>Paste the job link or the full job description text. We pull out the must-have skills, tools, and language.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-label">OUTPUT</div>
+        <h3>Your tailored resume</h3>
+        <p>A rewritten resume plus a keyword match report and a plain-English log of what changed and why.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE APP -->
+<div class="app-section">
+  <div class="wrap" style="padding: 64px 28px;" id="app">
+    <div class="section-head">
+      <div class="eyebrow">Try it now</div>
+      <h2>Paste your details below</h2>
+      <p>Everything runs in this browser tab. Nothing you paste here is saved anywhere once you close the page.</p>
+    </div>
+
+    <div class="app-grid">
+      <!-- RESUME PANEL -->
+      <div class="panel">
+        <h3>Your resume / LinkedIn</h3>
+        <div class="panel-sub">Paste your resume text or your LinkedIn experience — bullet points and all.</div>
+
+        <div class="tabs">
+          <button class="tab active" id="tabPaste" onclick="switchInputTab('paste')">Paste text</button>
+          <button class="tab" id="tabFile" onclick="switchInputTab('file')">Upload file</button>
+        </div>
+
+        <div id="pasteInputWrap">
+          <textarea id="resumeText" placeholder="Paste your resume text here, or your LinkedIn 'About' + Experience sections...
+
+Example:
+Jane Doe
+Marketing Coordinator at Brightline Co. (2021–present)
+- Ran social campaigns across Instagram and TikTok
+- Worked with design team on monthly content calendar
+- Helped grow newsletter list from 2,000 to 9,500 subscribers"></textarea>
+        </div>
+
+        <div id="fileInputWrap" style="display:none;">
+          <label class="file-drop" id="dropZone">
+            <input type="file" id="resumeFile" accept=".txt,.md,.rtf">
+            <div id="dropZoneText">Drop a .txt or .md file here, or click to browse<br><span style="font-size:12px;">(PDF/Word: open the file, copy the text, and use the "Paste text" tab instead — formatting never survives the rewrite anyway)</span></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- JOB PANEL -->
+      <div class="panel">
+        <h3>The job you're applying to</h3>
+        <div class="panel-sub">Paste the job description text directly — this works far more reliably than a link.</div>
+
+        <label class="field-label" for="jobUrl">Job posting link (optional)</label>
+        <input type="url" id="jobUrl" placeholder="https://company.com/careers/job-id">
+
+        <label class="field-label" for="jobText">Job description</label>
+        <textarea id="jobText" style="min-height: 220px;" placeholder="Paste the full job description here, including the 'requirements' and 'responsibilities' sections...
+
+Example:
+Senior Marketing Coordinator — Brightline Co.
+We're looking for someone with 3+ years in social/content marketing, hands-on experience with paid social campaigns, and strong cross-functional collaboration with design and product teams. Email marketing experience is a plus."></textarea>
+      </div>
+
+      <!-- GENERATE BAR -->
+      <div class="generate-bar">
+        <div class="generate-note" id="generateNote">We'll match your real experience against this posting's language — we won't invent skills or claims you didn't give us.</div>
+        <button class="btn-generate" id="generateBtn" onclick="generateTailoredResume()">
+          <span id="generateBtnText">Tailor my resume</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results" id="results" style="display:none;">
+      <div class="results-head">
+        <h3>Your tailored resume</h3>
+      </div>
+
+      <div class="score-row" id="scoreRow"></div>
+
+      <div class="kw-section">
+        <h4>Keyword match against this posting</h4>
+        <div class="kw-list" id="kwList"></div>
+      </div>
+
+      <div class="output-toolbar">
+        <button class="btn-small" onclick="copyOutput()">📋 Copy resume text</button>
+        <button class="btn-small" onclick="downloadOutput()">⬇ Download as .txt</button>
+        <button class="btn-small" id="docxBtn" onclick="downloadAsWordDoc()">📄 Download as Word doc</button>
+      </div>
+
+      <div class="resume-output" id="resumeOutput"></div>
+
+      <div class="change-log" id="changeLog"></div>
+    </div>
+
+    <div class="error-box" id="errorBox" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Before you paste anything in</div>
+      <h2>A few honest answers</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h3>Will this make up experience I don't have?</h3>
+        <p>No — it's explicitly instructed not to. It can only reorganize, re-word, and re-prioritize what's in the resume or profile text you provide. If a job asks for something you haven't done, the honest move is to leave it out, not fabricate it — and that's how this tool is built.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Why paste the job description instead of just the link?</h3>
+        <p>Lots of job sites block automated tools from reading their pages, or require a login. Pasting the text directly is slower for you but far more reliable — you can always paste the link too, as a backup reference.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is my resume data saved anywhere?</h3>
+        <p>No. Everything you paste is sent to generate your tailored resume and is not stored by this tool after your session ends. If you'd like a copy, use the copy or download button before you close the tab.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does this guarantee I get an interview?</h3>
+        <p>No tool can promise that. This helps your resume speak the same language as the posting and survive automated screening — the interview itself still depends on your background and the role's fit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>Sharpen — a resume tailoring tool</span>
+    <span>Built with care. Always double-check the final draft yourself.</span>
+  </div>
+</footer>
+
+<script>
+  // ---------- Hero diff animation ----------
+  const diffSequence = [
+    { before: "Worked with design team on monthly content calendar", after: "Partnered with design on a monthly content calendar, cutting turnaround time by 30%", tag: "+ quantified impact" },
+    { before: "Ran social campaigns across Instagram and TikTok", after: "Led paid & organic social campaigns across Instagram and TikTok", tag: "+ matched JD keyword: \"paid social\"" },
+  ];
+
+  function renderDiff(el, seq, cb) {
+    el.innerHTML = '';
+    let i = 0;
+    function next() {
+      if (i >= seq.length) { if (cb) setTimeout(cb, 2200); return; }
+      const item = seq[i];
+      const line = document.createElement('div');
+      line.style.marginBottom = '18px';
+      el.appendChild(line);
+      line.innerHTML = `<span class="diff-line diff-del">${item.before}</span>`;
+      setTimeout(() => {
+        line.innerHTML = `<span class="diff-line diff-del">${item.before}</span><span class="diff-line diff-add">${item.after}</span><span class="diff-tag" id="tag${i}">${item.tag}</span>`;
+        setTimeout(() => {
+          const t = document.getElementById('tag' + i);
+          if (t) t.classList.add('show');
+        }, 150);
+        i++;
+        setTimeout(next, 1900);
+      }, 1100);
+    }
+    next();
+  }
+
+  const diffEl = document.getElementById('diffDemo');
+  function loopDiff() { renderDiff(diffEl, diffSequence, loopDiff); }
+  loopDiff();
+
+  // ---------- Input tab switching ----------
+  function switchInputTab(which) {
+    document.getElementById('tabPaste').classList.toggle('active', which === 'paste');
+    document.getElementById('tabFile').classList.toggle('active', which === 'file');
+    document.getElementById('pasteInputWrap').style.display = which === 'paste' ? 'block' : 'none';
+    document.getElementById('fileInputWrap').style.display = which === 'file' ? 'block' : 'none';
+  }
+
+  // ---------- File upload handling ----------
+  const dropZone = document.getElementById('dropZone');
+  const resumeFile = document.getElementById('resumeFile');
+  const dropZoneText = document.getElementById('dropZoneText');
+
+  resumeFile.addEventListener('change', handleFile);
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      resumeFile.files = e.dataTransfer.files;
+      handleFile();
+    }
+  });
+
+  function handleFile() {
+    const file = resumeFile.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById('resumeText').value = e.target.result;
+      dropZoneText.innerHTML = `<span class="file-name">✓ ${file.name}</span> loaded — switch to "Paste text" tab to review/edit`;
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- Main generation logic ----------
+  async function generateTailoredResume() {
+    const resumeText = document.getElementById('resumeText').value.trim();
+    const jobText = document.getElementById('jobText').value.trim();
+    const jobUrl = document.getElementById('jobUrl').value.trim();
+
+    const errorBox = document.getElementById('errorBox');
+    errorBox.style.display = 'none';
+
+    if (!resumeText) {
+      showError('Paste your resume or LinkedIn text in first — we need something to work with.');
+      return;
+    }
+    if (!jobText) {
+      showError("Paste the job description text in — a link alone isn't enough for us to read the requirements reliably.");
+      return;
+    }
+
+    setLoading(true);
+
+    const systemPrompt = `You are an expert resume writer and career coach. You tailor resumes to specific job postings WITHOUT EVER inventing experience, skills, titles, employers, or accomplishments that are not present in the original resume/profile text provided by the user. You only reorganize, re-prioritize, re-word, and re-frame what is genuinely there. If the job asks for something the candidate's background doesn't show, you do not fabricate it.
+
+Respond ONLY with valid JSON, no markdown fences, no preamble, matching exactly this shape:
+{
+  "matchScore": <integer 0-100, how well the ORIGINAL resume matched the job before tailoring>,
+  "tailoredResume": "<the full rewritten resume as plain text, ready to use, well-organized with clear sections>",
+  "matchedKeywords": ["<keyword/skill from job posting that appears in candidate's real background>", ...],
+  "missingKeywords": ["<important keyword/requirement from job posting NOT present in candidate's background — be honest, don't force matches>", ...],
+  "changeLog": [
+    {"change": "<short title of what changed>", "reason": "<one sentence on why, tied to the job posting>"},
+    ...
+  ]
+}
+
+Keep matchedKeywords and missingKeywords to the most important 5-10 each. Keep changeLog to the 4-7 most meaningful changes. The tailoredResume should be complete and well-formatted with line breaks, ready to copy into a document.`;
+
+    const userPrompt = `CANDIDATE'S RESUME / LINKEDIN TEXT:
+"""
+${resumeText}
+"""
+
+JOB POSTING (link provided: ${jobUrl || 'none'}):
+"""
+${jobText}
+"""
+
+Tailor the candidate's resume to this job posting. Return only the JSON object described in your instructions.`;
+
+    try {
+      const response = await fetch("/api/tailor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ systemPrompt, userPrompt })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || ('Request failed with status ' + response.status));
+      }
+
+      const rawText = data.content.map(b => b.text || '').join('\n');
+      const cleaned = rawText.replace(/```json|```/g, '').trim();
+      const result = JSON.parse(cleaned);
+
+      renderResults(result);
+    } catch (err) {
+      console.error(err);
+      showError('Something went wrong generating your tailored resume: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function setLoading(isLoading) {
+    const btn = document.getElementById('generateBtn');
+    const btnText = document.getElementById('generateBtnText');
+    btn.disabled = isLoading;
+    btnText.innerHTML = isLoading ? '<span class="spinner"></span> Tailoring your resume...' : 'Tailor my resume';
+  }
+
+  function showError(msg) {
+    const errorBox = document.getElementById('errorBox');
+    errorBox.textContent = msg;
+    errorBox.style.display = 'block';
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  let lastOutputText = '';
+
+  function renderResults(result) {
+    const results = document.getElementById('results');
+    results.style.display = 'block';
+
+    // Score row
+    const scoreRow = document.getElementById('scoreRow');
+    const matchScore = result.matchScore ?? 0;
+    scoreRow.innerHTML = `
+      <div class="score-pill ${matchScore >= 70 ? 'good' : ''}">
+        <div class="num">${matchScore}%</div>
+        <div class="lbl">Original match score</div>
+      </div>
+      <div class="score-pill good">
+        <div class="num">${(result.matchedKeywords || []).length}</div>
+        <div class="lbl">Keywords matched</div>
+      </div>
+      <div class="score-pill">
+        <div class="num">${(result.changeLog || []).length}</div>
+        <div class="lbl">Changes made</div>
+      </div>
+    `;
+
+    // Keywords
+    const kwList = document.getElementById('kwList');
+    kwList.innerHTML = '';
+    (result.matchedKeywords || []).forEach(kw => {
+      const chip = document.createElement('span');
+      chip.className = 'kw-chip matched';
+      chip.textContent = '✓ ' + kw;
+      kwList.appendChild(chip);
+    });
+    (result.missingKeywords || []).forEach(kw => {
+      const chip = document.createElement('span');
+      chip.className = 'kw-chip missing';
+      chip.textContent = '✗ ' + kw;
+      kwList.appendChild(chip);
+    });
+
+    // Resume output
+    lastOutputText = result.tailoredResume || '';
+    document.getElementById('resumeOutput').textContent = lastOutputText;
+
+    // Change log
+    const changeLog = document.getElementById('changeLog');
+    if ((result.changeLog || []).length) {
+      changeLog.innerHTML = '<h4>What changed, and why</h4>' + result.changeLog.map((c, i) => `
+        <div class="change-item">
+          <div class="change-icon">${i + 1}</div>
+          <p><strong>${escapeHtml(c.change)}</strong> — ${escapeHtml(c.reason)}</p>
+        </div>
+      `).join('');
+    } else {
+      changeLog.innerHTML = '';
+    }
+
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function copyOutput() {
+    if (!lastOutputText) return;
+    navigator.clipboard.writeText(lastOutputText).then(() => {
+      const btn = event.target;
+      const original = btn.textContent;
+      btn.textContent = '✓ Copied';
+      setTimeout(() => { btn.textContent = original; }, 1800);
+    });
+  }
+
+  function downloadOutput() {
+    if (!lastOutputText) return;
+    const blob = new Blob([lastOutputText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tailored-resume.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------- Word document export ----------
+  function looksLikeSectionHeader(line) {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    if (trimmed.length > 45) return false;
+    // ALL CAPS line (allowing spaces, &, /, -) e.g. "WORK EXPERIENCE", "SKILLS & TOOLS"
+    const isAllCaps = trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed) && !/[a-z]/.test(trimmed);
+    // Common resume section names, in case the model doesn't use all-caps.
+    // Matches the keyword anywhere at the start of a short line, so "Volunteer Work",
+    // "Professional Experience", "Technical Skills & Tools" etc. all still count.
+    const commonHeaderStart = /^(summary|profile|objective|experience|work experience|professional experience|employment|education|skills|technical skills|core competencies|certifications?|projects|achievements|awards|publications|languages|volunteer|interests|references)\b/i;
+    // Guard against this firing on an actual sentence that happens to start with one of these words
+    const looksLikeShortLabel = trimmed.split(' ').length <= 5 && !/[.!?]$/.test(trimmed);
+    return isAllCaps || (commonHeaderStart.test(trimmed) && looksLikeShortLabel);
+  }
+
+  function looksLikeBullet(line) {
+    return /^\s*[-•*●▪]\s+/.test(line);
+  }
+
+  function stripBulletMarker(line) {
+    return line.replace(/^\s*[-•*●▪]\s+/, '').trim();
+  }
+
+  function looksLikeNameLine(line, lineIndex) {
+    // First non-empty line, short, no lowercase-only sentence punctuation
+    return lineIndex === 0 && line.trim().length > 0 && line.trim().length < 60 && !line.includes('.');
+  }
+
+  async function buildResumeDocxBlob(text) {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType,
+            LevelFormat, BorderStyle } = docx;
+
+    const rawLines = text.split('\n');
+    // Find index of first non-empty line for name detection
+    let firstContentIdx = rawLines.findIndex(l => l.trim().length > 0);
+
+    const children = [];
+
+    rawLines.forEach((line, idx) => {
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        return; // skip empty lines; spacing handled via paragraph spacing settings
+      }
+
+      if (idx === firstContentIdx && looksLikeNameLine(line, idx)) {
+        children.push(new Paragraph({
+          alignment: AlignmentType.LEFT,
+          spacing: { after: 60 },
+          children: [ new TextRun({ text: trimmed, bold: true, size: 36, font: "Arial" }) ]
+        }));
+        return;
+      }
+
+      if (looksLikeSectionHeader(trimmed)) {
+        children.push(new Paragraph({
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 240, after: 100 },
+          border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: "999999", space: 2 } },
+          children: [ new TextRun({ text: trimmed, bold: true, size: 26, font: "Arial", color: "1C1D21" }) ]
+        }));
+        return;
+      }
+
+      if (looksLikeBullet(trimmed)) {
+        children.push(new Paragraph({
+          numbering: { reference: "resume-bullets", level: 0 },
+          spacing: { after: 60 },
+          children: [ new TextRun({ text: stripBulletMarker(trimmed), size: 22, font: "Arial" }) ]
+        }));
+        return;
+      }
+
+      // Regular paragraph (e.g. job title/company line, summary text)
+      children.push(new Paragraph({
+        spacing: { after: 100 },
+        children: [ new TextRun({ text: trimmed, size: 22, font: "Arial" }) ]
+      }));
+    });
+
+    const doc = new Document({
+      numbering: {
+        config: [{
+          reference: "resume-bullets",
+          levels: [{
+            level: 0,
+            format: LevelFormat.BULLET,
+            text: "•",
+            alignment: AlignmentType.LEFT,
+            style: { paragraph: { indent: { left: 360, hanging: 270 } } }
+          }]
+        }]
+      },
+      styles: {
+        default: { document: { run: { font: "Arial", size: 22 } } }
+      },
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 12240, height: 15840 },
+            margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 }
+          }
+        },
+        children
+      }]
+    });
+
+    return await Packer.toBlob(doc);
+  }
+
+  async function downloadAsWordDoc() {
+    if (!lastOutputText) return;
+    const btn = document.getElementById('docxBtn');
+    const original = btn.textContent;
+    btn.textContent = '⏳ Building Word doc...';
+    btn.disabled = true;
+
+    try {
+      const blob = await buildResumeDocxBlob(lastOutputText);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tailored-resume.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      btn.textContent = '✓ Downloaded';
+      setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1800);
+    } catch (err) {
+      console.error('Word doc generation failed:', err);
+      btn.textContent = '⚠ Failed — try again';
+      setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2200);
+    }
+  }
+</script>
+
+</body>
+</html>
